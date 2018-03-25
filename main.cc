@@ -1,10 +1,3 @@
-/*
- * main.cc
- *
- *  Created on: Sep 12, 2014
- *      Author: m.kolny
- */
-
 #include <gstreamermm.h>
 #include <iostream>
 #include <glibmm/main.h>
@@ -12,19 +5,12 @@
 using namespace Gst;
 using Glib::RefPtr;
 
-
 class AllMediaPlayer
 {
 private:
   RefPtr<Glib::MainLoop> main_loop;
   RefPtr<Pipeline> pipeline;
-
-#ifndef GSTREAMERMM_DISABLE_DEPRECATED
-  RefPtr<FileSrc> source;
-#else
-  RefPtr<Gst::Element> source;
-#endif
-
+  RefPtr<Element> source;
   RefPtr<Element> decoder;
 
   bool on_bus_message(const RefPtr<Bus>&, const RefPtr<Message>& message);
@@ -32,17 +18,17 @@ private:
 
   void init()
   {
-#ifndef GSTREAMERMM_DISABLE_DEPRECATED
-    source = FileSrc::create();
-#else
     source = ElementFactory::create_element("filesrc");
-#endif
-    
+    if (!source) 
+    {
+      throw std::runtime_error("Couldn't create filesrc.");
+    }
+
     decoder = ElementFactory::create_element("decodebin");
 
-    if (!decoder || !source)
+    if (!decoder)
     {
-      throw std::runtime_error("One element could not be created.");
+      throw std::runtime_error("Couldn't create decodebin.");
     }
 
     pipeline->add(source)->add(decoder);
@@ -63,12 +49,7 @@ public:
   {
     init();
 
-#ifndef GSTREAMERMM_DISABLE_DEPRECATED
-    source->property_location() = filename;
-#else
     source->set_property("location", filename);
-#endif
-
     pipeline->set_state(STATE_PLAYING);
     main_loop->run();
     pipeline->set_state(STATE_NULL);
@@ -150,15 +131,19 @@ int main(int argc, char** argv)
   }
 
   init(argc, argv);
-  AllMediaPlayer player;
 
-  try
+
+  for (int i = 1; i < argc; i++) 
   {
-    player.play_until_eos(argv[1]);
-  }
-  catch (const std::runtime_error& err)
-  {
-    std::cerr << "runtime error: " << err.what() << std::endl;
+    try
+    {
+      AllMediaPlayer player;
+      player.play_until_eos(argv[1]);
+    }
+    catch (const std::runtime_error& err)
+    {
+      std::cerr << "runtime error: " << err.what() << std::endl;
+    }
   }
 
   return 0;
