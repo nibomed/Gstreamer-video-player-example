@@ -1,3 +1,4 @@
+// Based on example https://github.com/GNOME/gstreamermm/blob/master/examples/all_media_player/main.cc 
 #include <gstreamermm.h>
 #include <iostream>
 #include <glibmm/main.h>
@@ -126,12 +127,9 @@ int main(int argc, char** argv)
 {
   if (argc < 2)
   {
-    std::cout << "Usage: " << argv[0] << " <multimedia filename>" << std::endl;
+    std::cout << "Usage: " << argv[0] << " <at least one multimedia file>" << std::endl;
     return 1;
   }
-
-  init(argc, argv);
-
 
   for (int i = 1; i < argc; i++) 
   {
