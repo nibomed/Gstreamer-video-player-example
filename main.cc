@@ -131,6 +131,8 @@ int main(int argc, char** argv)
     return 1;
   }
 
+  init(argc, argv);
+
   for (int i = 1; i < argc; i++) 
   {
     try
