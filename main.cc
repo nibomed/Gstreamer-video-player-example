@@ -1,4 +1,4 @@
-// Based on example https://github.com/GNOME/gstreamermm/blob/master/examples/all_media_player/main.cc 
+// Based on example /gstreamermm/examples/all_media_player/main.cc 
 #include <gstreamermm.h>
 #include <iostream>
 #include <glibmm/main.h>
@@ -138,11 +138,11 @@ int main(int argc, char** argv)
     try
     {
       AllMediaPlayer player;
-      player.play_until_eos(argv[1]);
+      player.play_until_eos(argv[i]);
     }
     catch (const std::runtime_error& err)
     {
-      std::cerr << "runtime error: " << err.what() << std::endl;
+      std::cerr << "runtime error: " << err.what() << " for file " << argv[i] << std::endl;
     }
   }
 
